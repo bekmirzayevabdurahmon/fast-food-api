@@ -6,6 +6,10 @@ const categorySchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
+    food: {
+        type: mongoose.SchemaTypes.Array,
+        ref: "Food",
+    },
 }, {
     collection: "categories",
     timestamps: true,
