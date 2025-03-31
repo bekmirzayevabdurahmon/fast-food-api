@@ -1,5 +1,6 @@
-export const ValidationMiddleware = () => {
+export const ValidationMiddleware = (schema) => {
     return(req, res, next) => {
+        
         const { error, value } = schema.validate(req.body);
 
         if(error){
