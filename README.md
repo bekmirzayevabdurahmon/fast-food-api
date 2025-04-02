@@ -48,6 +48,8 @@
    - id
    - name
    - email
+   - password
+   - role
    - phoneNumber
    - imageUrl
    - createdAt

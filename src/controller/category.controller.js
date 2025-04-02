@@ -1,98 +1,107 @@
 import { isValidObjectId } from "mongoose";
 import categoryModel from "../model/category.model.js";
+import { BaseException } from "../exceptions/base.exception.js";
 
-const getAllCategories = async (req, res) => {
-    const categories = await categoryModel.find().populate("food")
+const getAllCategories = async (req, res, next) => {
+    try {
+        const categories = await categoryModel.find().populate("food")
 
-    res.send({
-        message: "succes",
-        data: categories,
-    })
-};
-
-const getOneCategory = async (req, res) => {
-    const { id } = req.params;
-
-    if (!isValidObjectId(id)){
-        return res.status(400).send({
-            message: `Given ID: ${id} is not valid Object ID`,
+        res.send({
+            message: "succes",
+            data: categories,
         });
-    };
-
-    const category = await categoryModel.findById(id);
-
-    if(!category){
-        return res.status(404).send({
-            message: `Category with ID: ${id} not found00`,
-        });
-    };
-
-    res.send({
-        message: "Succes",
-        data: category,
-    });
-};
-
-const createCategory = async (req, res) => {
-    const { name } = req.body;
-
-    const foundedCategory = await categoryModel.findOne({ name });
-
-    if(foundedCategory) {
-        return res.status(409).send({
-            message: `Category: ${name} allaqachon mavjud`,
-        });
-    };
-
-    const category = await categoryModel.create({ name });
-
-    res.send({
-        message: "Succes",
-        data: category,
-    });
-};
-
-const updateCategory = async (req, res) => {
-    const { id } = req.params;
-    const { name } = req.body;
-
-    if(!isValidObjectId(id)){
-        return res.status(400).send({
-            message: `Given ID: ${id} is not valid Object ID`,
-        });
+    } catch (error) {
+        next(error)
     }
-
-    const foundedCategory = await categoryModel.findOne({ name });
-
-    if (foundedCategory) {
-        return res.status(409).send({
-            message: `Category: ${name} allaqachon mavjud`,
-        });
-    }
-
-    const updatedCategory = await categoryModel.findByIdAndUpdate(id, { name })
-
-    res.send({
-        message: "Succes",
-        data: updateCategory,
-    });
 };
 
-const deleteCategory = async (req, res) => {
-    const { id } = req.params;
+const getOneCategory = async (req, res, next) => {
+    try {
+        const { id } = req.params;
 
-    if(!isValidObjectId(id)){
-        return res.status(400).send({
-            message: `Given ID: ${id} is not valid Object ID`,
+        if (!isValidObjectId(id)){
+            throw new BaseException(`Given ID: ${id} is not valid Object ID`, 400)
+        };
+    
+        const category = await categoryModel.findById(id);
+    
+        if(!category){
+            throw new BaseException(`Given category: ${category} is not found`, 404)
+        };
+    
+        res.send({
+            message: "Succes",
+            data: category,
         });
+    } catch (error) {
+        next(error)
     }
+};
 
-    const category = await categoryModel.deleteOne({_id: id});
+const createCategory = async (req, res, next) => {
+    try {
+        const { name } = req.body;
 
-    res.send({
-        message: "Succes",
-        data: category,
-    });
+        const foundedCategory = await categoryModel.findOne({ name });
+    
+        if(foundedCategory) {
+            throw new BaseException(`Category: ${name} allaqachon mavjud`, 409)
+        };
+    
+        const category = await categoryModel.create({ name });
+    
+        res.send({
+            message: "Succes",
+            data: category,
+        });
+    } catch (error) {
+        next(error)
+    }
+};
+
+const updateCategory = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const { name } = req.body;
+    
+        if(!isValidObjectId(id)){
+            throw new BaseException(`Given ID: ${id} is not valid Object ID`, 400)
+        }
+    
+        const foundedCategory = await categoryModel.findOne({ name });
+    
+        if (foundedCategory) {
+            throw new BaseException(`Category: ${name} allaqachon mavjud`, 409)
+        }
+    
+        const updatedCategory = await categoryModel.findByIdAndUpdate(id, { name })
+    
+        res.send({
+            message: "Succes",
+            data: updateCategory,
+        });
+    } catch (error) {
+        next(error)
+    }
+};
+
+const deleteCategory = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+
+        if(!isValidObjectId(id)){
+            throw new BaseException(`Given ID: ${id} is not valid Object ID`, 400)
+        }
+    
+        const category = await categoryModel.deleteOne({_id: id});
+    
+        res.send({
+            message: "Succes",
+            data: category,
+        });
+    } catch (error) {
+        next(error)
+    }
 };
 
 export default { getAllCategories, getOneCategory, createCategory, updateCategory, deleteCategory}
