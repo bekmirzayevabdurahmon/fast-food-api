@@ -1,44 +1,51 @@
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
-    {
-        name: {
-            type: mongoose.SchemaTypes.String,
-            required: true,
-        },
-        email: {
-            type: mongoose.SchemaTypes.String,
-            required: true,
-            unique: true,
-            match: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/
-        },
-        password: {
-            type: mongoose.SchemaTypes.String,
-            required: true,
-        },
-        phoneNumber: {
-            type: mongoose.SchemaTypes.String,
-            required: true,
-            unique: true,
-            minLength: 9,
-            maxLength: 9,
-            match: /^(9[012345789]|6[125679]|7[012345689]|3[3]|8[8]|2[0]|5[05])[0-9]{7}$/,
-        },
-        imageUrl: {
-            type: mongoose.SchemaTypes.String,
-            require: false,
-        },
-        role: {
-            type: mongoose.SchemaTypes.String,
-            enum: ['USER', 'OWNER', 'ADMIN'],
-            default: 'USER',
-        },  
+  {
+    name: {
+      type: mongoose.SchemaTypes.String,
+      required: true,
     },
-    {
-        collection: "users",
-        timestamps: true,
-        versionKey: false,
-    }
+    email: {
+      type: mongoose.SchemaTypes.String,
+      required: true,
+      unique: true,
+      match: /^((?!\.)[\w-_.]*[^.])(@\w+)(\.\w+(\.\w+)?[^.\W])$/gim,
+    },
+    password: {
+      type: mongoose.SchemaTypes.String,
+      required: true,
+    },
+    phoneNumber: {
+      type: mongoose.SchemaTypes.String,
+      required: true,
+      unique: true,
+      minLength: 9,
+      maxLength: 9,
+      match:
+        /^(9[012345789]|6[125679]|7[0123456789]|3[3]|8[8]|2[0]|5[05])[0-9]{7}$/,
+    },
+    role: {
+      type: mongoose.SchemaTypes.String,
+      enum: ["USER", "OWNER", "ADMIN"],
+      default: "USER",
+    },
+    imageUrl: {
+      type: mongoose.SchemaTypes.String,
+      required: false,
+    },
+    orders: [
+      {
+        type: mongoose.SchemaTypes.ObjectId,
+        ref: "Order",
+      },
+    ],
+  },
+  {
+    collection: "users",
+    timestamps: true,
+    versionKey: false,
+  }
 );
 
-export default mongoose.model("User", userSchema)
+export default mongoose.model("User", userSchema);
