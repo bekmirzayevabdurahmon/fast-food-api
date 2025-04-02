@@ -1,16 +1,16 @@
 import { config } from "dotenv";
 import mongoose from "mongoose";
 
-config();
+config()
 
 const connectDB = async () => {
     try {
         await mongoose.connect(process.env.MONGO_URL)
-        console.log("MongoDB ulandi ✅");
+        console.log("MongoDB ulandi ✅")
     } catch (error) {
-        throw new Error("Database'ga ulanishda xatolik")
+        console.log("Database'ga ulanishda xatolik")
         process.exit(1)
     }
 }
 
-export default connectDB
+export default connectDB;
