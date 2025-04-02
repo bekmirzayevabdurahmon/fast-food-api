@@ -1,16 +1,18 @@
+import { BaseException } from "../exceptions/base.exception.js";
+
 export const ValidationMiddleware = (schema) => {
     return(req, res, next) => {
-        
-        const { error, value } = schema.validate(req.body);
+        try {
+            const { error, value } = schema.validate(req.body);
 
-        if(error){
-            return res.status(404).send({
-                message: error.message
-            })
+            if(error){
+                throw new BaseException(error.message, 400)
+            };
+
+            req.body = value;   
+            next() 
+        } catch (error) {
+            next(error);
         }
-
-        req.body = value;
-
-        next()
     };
 };

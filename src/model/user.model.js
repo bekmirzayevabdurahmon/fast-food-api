@@ -28,6 +28,11 @@ const userSchema = new mongoose.Schema(
             type: mongoose.SchemaTypes.String,
             require: false,
         },
+        role: {
+            type: mongoose.SchemaTypes.String,
+            enum: ['USER', 'OWNER', 'ADMIN'],
+            default: 'USER',
+        },  
     },
     {
         collection: "users",
