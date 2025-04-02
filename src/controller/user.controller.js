@@ -2,6 +2,10 @@ import { compare, hash } from "bcrypt";
 import jwt from "jsonwebtoken"
 import userModel from "../model/user.model.js";
 import { BaseException } from "../exceptions/base.exception.js";
+import { ACCESS_TOKEN_EXPIRE_TIME, 
+    ACCESS_TOKEN_SECRET, 
+    REFRESH_TOKEN_EXPIRE_TIME, 
+    REFRESH_TOKEN_SECRET } from "../config/jwt.config.js";
 
 const register = async (req, res, next) => {
     try {
@@ -22,14 +26,22 @@ const register = async (req, res, next) => {
         password: passwordHash,
     });
 
-    const token = jwt.sign({ id: user.id, role: user.role }, "secret_key", {
-        expiresIn:  "2h",
+    const accessToken = jwt.sign({ id: user.id, role: user.role }, ACCESS_TOKEN_SECRET, {
+        expiresIn:  ACCESS_TOKEN_EXPIRE_TIME,
         algorithm: "HS256", 
     });
 
+    const refreshToken = jwt.sign({ id: user.id, role: user.role }, REFRESH_TOKEN_SECRET, {
+        expiresIn:  REFRESH_TOKEN_EXPIRE_TIME,
+        algorithm: "HS256", 
+    });    
+
     res.status(201).send({
         message: "Succes",
-        token: token,
+        tokens: {
+            AccessToken: accessToken,
+            RefreshToken: refreshToken,
+        },
         data: user
     });
     } catch (error) {
@@ -82,4 +94,46 @@ const getAllUsers = async (req, res, next) => {
     }
 };
 
-export default { register, getAllUsers, login }
+const refresh = async (req, res, next) => {
+    try {
+        const { refreshToken } = req.body;
+
+        const data = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
+
+        const accessToken = jwt.sign(
+            data, 
+            ACCESS_TOKEN_SECRET, 
+            {
+                expiresIn:  ACCESS_TOKEN_EXPIRE_TIME,
+                algorithm: "HS256", 
+            }
+        );
+    
+        const newRefreshToken = jwt.sign(
+            data, 
+            REFRESH_TOKEN_SECRET, 
+            {
+                expiresIn:  REFRESH_TOKEN_EXPIRE_TIME,
+                algorithm: "HS256", 
+            }
+        );    
+
+        res.send({
+            message: "Succes",
+            tokens: {
+                accessToken,
+                refreshToken: newRefreshToken,
+            },
+        });
+    } catch (error) {
+        if(error instanceof jwt.TokenExpiredError) {
+            next(new BaseException("Refresh token expired", 422));
+        } else if( error instanceof jwt.JsonWebTokenError) {
+            next( new BaseException("Invalid refresh token", 400));
+        } else {
+            next(error)
+        }
+    }
+}
+
+export default { register, getAllUsers, login, refresh }
