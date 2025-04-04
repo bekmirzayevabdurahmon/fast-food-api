@@ -46,6 +46,8 @@ const createFood = async (req, res, next) => {
   try {
     const { name, price, category, description, imageUrl } = req.body;
 
+    console.log(req.file)
+
     const foundedCategory = await categoryModel.findById(category);
 
     if (!foundedCategory) {
@@ -57,7 +59,7 @@ const createFood = async (req, res, next) => {
       price,
       category,
       description,
-      imageUrl,
+      imageUrl: req.file.filename,
     });
 
     await categoryModel.updateOne(
