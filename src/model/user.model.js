@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { ROLES } from "../constants/role.constants.js";
 
 const userSchema = new mongoose.Schema(
   {
@@ -27,8 +28,8 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: mongoose.SchemaTypes.String,
-      enum: ["VIEWER", "RESTAURANT_OWNER", "SUPER_ADMIN"],
-      default: "VIEWER",
+      enum: [ROLES.VIEWER, ROLES.RESTAURANT_OWNER, ROLES.SUPER_ADMIN],
+      default: ROLES.VIEWER,
     },
     imageUrl: {
       type: mongoose.SchemaTypes.String,

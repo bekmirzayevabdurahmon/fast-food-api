@@ -1,0 +1,6 @@
+export const ROLES = {
+    VIEWER: "VIEWER",
+    SUPER_ADMIN: "SUPER_ADMIN",
+    RESTAURANT_OWNER: "RESTAURANT_OWNER",
+    ALL: "ALL"
+};
