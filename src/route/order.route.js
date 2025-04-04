@@ -11,8 +11,5 @@ orderRouter.post(
   orderController.createOrder
 )
 .get("/", orderController.getAllOrders)
-.get("/:id", orderController.getOneOrder)
-.patch("/:id", orderController.updateOrder)
-.delete("/:id", orderController.deleteOrder);
 
 export default orderRouter;

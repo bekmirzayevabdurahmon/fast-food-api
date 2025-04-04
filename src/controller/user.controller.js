@@ -33,30 +33,8 @@ const register = async (req, res, next) => {
       password: passwordHash,
     });
 
-    const accessToken = jwt.sign(
-      { id: user.id, role: user.role },
-      ACCESS_TOKEN_SECRET,
-      {
-        expiresIn: ACCESS_TOKEN_EXPIRE_TIME,
-        algorithm: "HS256",
-      }
-    );
-
-    const refreshToken = jwt.sign(
-      { id: user.id, role: user.role },
-      REFRESH_TOKEN_SECRET,
-      {
-        expiresIn: REFRESH_TOKEN_EXPIRE_TIME,
-        algorithm: "HS256",
-      }
-    );
-
     res.status(201).send({
       message: "success",
-      tokens: {
-        accessToken,
-        refreshToken,
-      },
       data: user,
     });
   } catch (error) {
@@ -80,8 +58,30 @@ const login = async (req, res, next) => {
       throw new BaseException("Invalid password", 401);
     }
 
+    const accessToken = jwt.sign(
+      { id: user.id, role: user.role },
+      ACCESS_TOKEN_SECRET,
+      {
+        expiresIn: ACCESS_TOKEN_EXPIRE_TIME,
+        algorithm: "HS256",
+      }
+    );
+
+    const refreshToken = jwt.sign(
+      { id: user.id, role: user.role },
+      REFRESH_TOKEN_SECRET,
+      {
+        expiresIn: REFRESH_TOKEN_EXPIRE_TIME,
+        algorithm: "HS256",
+      }
+    );
+
     res.send({
       message: "success",
+      tokens: {
+        accessToken,
+        refreshToken,
+      },
       data: user,
     });
   } catch (error) {
@@ -96,7 +96,7 @@ const getAllUsers = async (req, res) => {
       populate: {
         path: "orderItems",
         populate: "food",
-      }
+      },
     });
 
     res.send({
