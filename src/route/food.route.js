@@ -5,9 +5,9 @@ import { createFoodSchema, updateFoodSchema } from "../schema/food.schema.js";
 import { upload } from "../config/multer.config.js";
 import { ROLES } from "../constants/role.constants.js";
 import { Roles } from "../middleware/roles.middleware.js";
+import { Protected } from "../middleware/protected.middleware.js";
 
 const foodRouter = Router();
-
 
 foodRouter
   .get("/",
@@ -29,9 +29,9 @@ foodRouter
     foodController.createFood
   )
   .patch(
+    "/:id",
     Protected(true), 
     Roles(ROLES.RESTAURANT_OWNER, ROLES.SUPER_ADMIN), 
-    "/:id",
     ValidationMiddleware(updateFoodSchema),
     foodController.updateFood
   )

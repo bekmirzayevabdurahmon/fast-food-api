@@ -8,6 +8,7 @@ import {
   REFRESH_TOKEN_EXPIRE_TIME,
   REFRESH_TOKEN_SECRET,
 } from "../config/jwt.config.js";
+import { sendMail } from "../utils/mail.utils.js";
 
 const register = async (req, res, next) => {
   try {
@@ -32,6 +33,12 @@ const register = async (req, res, next) => {
       name,
       password: passwordHash,
     });
+
+    await sendMail(
+      {to: email,
+        subject: "Welcome",
+        text: "Bizning Fast Food restoranimizga muvoffaqiyatli ro'yxatdan o'tdingiz",
+      });
 
     res.status(201).send({
       message: "success",
@@ -75,6 +82,16 @@ const login = async (req, res, next) => {
         algorithm: "HS256",
       }
     );
+
+    res.cookie("accessToken", accessToken, {
+      maxAge: 1 * 1000,
+      httpOnly: true,
+    });
+
+    res.cookie("refreshToken", refreshToken, {
+      maxAge: 2 * 60 * 1000,
+      httpOnly: true,
+    });
 
     res.send({
       message: "success",
